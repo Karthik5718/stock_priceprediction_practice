@@ -49,29 +49,13 @@ y_tr=y_te.reshape(-1,1)
 xcharizard2=sc.inverse_transform(y_te)
 window_size = 10
 split = int(len(y) * 0.8)
+
+
+'streamlit-'
+
+
 import streamlit as st
 st.title("NIFTY 50 LSTM Prediction")
-
-plt.figure(figsize=(12,6))
-plt.plot(data.index, data["close"], color="red", label="Original")
-plt.plot(
-    data.index[window_size:window_size+split],
-    xcharizard1,
-    color="blue",
-    label="Train Prediction"
-)
-plt.plot(
-    data.index[window_size+split:window_size+split+len(xcharizard2)],
-    xcharizard2,
-    color="green",
-    label="Test Prediction"
-)
-plt.xlabel("Date")
-plt.ylabel("Close Price")
-plt.legend()
-plt.title("Train & Test Predictions")
-plt.show()
-'streamlit-'
 import streamlit as st
 st.title("NIFTY 50 LSTM Prediction")
 st.subheader("Dataset Preview")
