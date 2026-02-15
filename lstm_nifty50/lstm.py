@@ -49,7 +49,9 @@ y_tr=y_te.reshape(-1,1)
 xcharizard2=sc.inverse_transform(y_te)
 window_size = 10
 split = int(len(y) * 0.8)
-import matplotlib.pyplot as plt
+import streamlit as st
+st.title("NIFTY 50 LSTM Prediction")
+
 plt.figure(figsize=(12,6))
 plt.plot(data.index, data["close"], color="red", label="Original")
 plt.plot(
@@ -69,3 +71,35 @@ plt.ylabel("Close Price")
 plt.legend()
 plt.title("Train & Test Predictions")
 plt.show()
+'streamlit-'
+import streamlit as st
+st.title("NIFTY 50 LSTM Prediction")
+st.subheader("Dataset Preview")
+st.dataframe(data.head())
+st.subheader("Dataset Shape")
+st.write(data.shape)
+train_mse = mean_squared_error(y_train, y_tr)
+test_mse = mean_squared_error(y_test, y_te)
+st.subheader("Model Performance")
+st.write(f"Train MSE: {train_mse}")
+st.write(f"Test MSE: {test_mse}")
+fig, ax = plt.subplots(figsize=(12,6))
+ax.plot(data.index, data["close"], color="red", label="Original")
+ax.plot(
+    data.index[window_size:window_size+split],
+    xcharizard1,
+    color="blue",
+    label="Train Prediction"
+)
+ax.plot(
+    data.index[window_size+split:window_size+split+len(xcharizard2)],
+    xcharizard2,
+    color="green",
+    label="Test Prediction"
+)
+ax.set_xlabel("Date")
+ax.set_ylabel("Close Price")
+ax.legend()
+ax.set_title("Train & Test Predictions")
+st.subheader("Prediction Graph")
+st.pyplot(fig)
