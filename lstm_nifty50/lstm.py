@@ -1,0 +1,67 @@
+import pandas as pd
+import numpy as np
+import tensorflow as tf
+data=pd.read_csv("NIFTY 50_day.csv")
+data["date"]=pd.to_datetime(data["date"])
+data.set_index("date", inplace=True)
+print(data.head(2))
+df=data[["close"]].values
+print(df.shape)
+from sklearn.preprocessing import StandardScaler
+sc=StandardScaler()
+df=sc.fit_transform(df)
+window_size=10
+x=[]
+y=[]
+for i in range(window_size,len(df)):
+    x.append(df[i-window_size:i,0])
+    y.append(df[i,0])
+x=np.array(x)
+y=np.array(y)
+print(y[:5])
+split = int(len(x) * 0.8)
+x_train = x[:split]
+x_test  = x[split:]
+y_train = y[:split]
+y_test  = y[split:]
+x_train=x_train.reshape(x_train.shape[0],x_train.shape[1],1)
+x_test=x_test.reshape(x_test.shape[0],x_test.shape[1],1)
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import LSTM, Dense,Dropout
+from tensorflow.keras import layers, regularizers
+model = Sequential()
+model.add(LSTM(units=128, input_shape=(x_train.shape[1], 1)))
+model.add(Dense(units=1))
+model.compile(optimizer='adam', loss='mean_squared_error')
+model.fit(x_train, y_train, epochs=100)
+from sklearn.metrics import mean_squared_error
+y_tr=model.predict(x_train)
+print(mean_squared_error(y_tr,y_train))
+y_tr=y_tr.reshape(-1,1)
+xcharizard1=sc.inverse_transform(y_tr)
+y_te=model.predict(x_test)
+print(mean_squared_error(y_te,y_test))
+y_tr=y_te.reshape(-1,1)
+xcharizard2=sc.inverse_transform(y_te)
+window_size = 10
+split = int(len(y) * 0.8)
+import matplotlib.pyplot as plt
+plt.figure(figsize=(12,6))
+plt.plot(data.index, data["close"], color="red", label="Original")
+plt.plot(
+    data.index[window_size:window_size+split],
+    xcharizard1,
+    color="blue",
+    label="Train Prediction"
+)
+plt.plot(
+    data.index[window_size+split:window_size+split+len(xcharizard2)],
+    xcharizard2,
+    color="green",
+    label="Test Prediction"
+)
+plt.xlabel("Date")
+plt.ylabel("Close Price")
+plt.legend()
+plt.title("Train & Test Predictions")
+plt.show()
