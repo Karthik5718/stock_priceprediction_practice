@@ -8,9 +8,7 @@ file_path = os.path.join(BASE_DIR, "NIFTY 50_day.csv")
 data = pd.read_csv(file_path)
 data["date"]=pd.to_datetime(data["date"])
 data.set_index("date", inplace=True)
-print(data.head(2))
 df=data[["close"]].values
-print(df.shape)
 from sklearn.preprocessing import StandardScaler
 sc=StandardScaler()
 df=sc.fit_transform(df)
@@ -22,7 +20,6 @@ for i in range(window_size,len(df)):
     y.append(df[i,0])
 x=np.array(x)
 y=np.array(y)
-print(y[:5])
 split = int(len(x) * 0.8)
 x_train = x[:split]
 x_test  = x[split:]
@@ -39,38 +36,35 @@ model.add(Dense(units=1))
 model.compile(optimizer='adam', loss='mean_squared_error')
 model.fit(x_train, y_train, epochs=100)
 from sklearn.metrics import mean_squared_error
-y_tr=model.predict(x_train)
-y_tr=y_tr.reshape(-1,1)
-xcharizard1=sc.inverse_transform(y_tr)
-y_te=model.predict(x_test)
-y_tr=y_te.reshape(-1,1)
-xcharizard2=sc.inverse_transform(y_te)
-window_size = 10
-split = int(len(y) * 0.8)
-
-
 import streamlit as st
+import matplotlib.pyplot as plt
+y_train_pred = model.predict(x_train)
+y_test_pred = model.predict(x_test)
+train_mse = mean_squared_error(y_train, y_train_pred)
+test_mse = mean_squared_error(y_test, y_test_pred)
+y_train_pred_inv = sc.inverse_transform(y_train_pred)
+y_test_pred_inv = sc.inverse_transform(y_test_pred)
 st.title("NIFTY 50 LSTM Prediction")
 st.subheader("Dataset Preview")
 st.dataframe(data.head())
 st.subheader("Dataset Shape")
 st.write(data.shape)
-train_mse = mean_squared_error(y_train, y_tr)
-test_mse = mean_squared_error(y_test, y_te)
 st.subheader("Model Performance")
 st.write(f"Train MSE: {train_mse}")
 st.write(f"Test MSE: {test_mse}")
+window_size = 10
+split = int(len(y) * 0.8)
 fig, ax = plt.subplots(figsize=(12,6))
 ax.plot(data.index, data["close"], color="red", label="Original")
 ax.plot(
     data.index[window_size:window_size+split],
-    xcharizard1,
+    y_train_pred_inv,
     color="blue",
     label="Train Prediction"
 )
 ax.plot(
-    data.index[window_size+split:window_size+split+len(xcharizard2)],
-    xcharizard2,
+    data.index[window_size+split:window_size+split+len(y_test_pred_inv)],
+    y_test_pred_inv,
     color="green",
     label="Test Prediction"
 )
