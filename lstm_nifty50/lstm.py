@@ -34,7 +34,7 @@ import streamlit as st
 from sklearn.metrics import mean_squared_error
 import matplotlib.pyplot as plt
 @st.cache_resource
-def train_and_predict(x_train, y_train, x_test, sc):
+def train_and_predict(x_train, y_train, x_test, _sc):
     model = Sequential()
     model.add(LSTM(units=128, input_shape=(x_train.shape[1], 1)))
     model.add(Dense(units=1))
