@@ -30,20 +30,27 @@ x_test=x_test.reshape(x_test.shape[0],x_test.shape[1],1)
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense,Dropout
 from tensorflow.keras import layers, regularizers
-model = Sequential()
-model.add(LSTM(units=128, input_shape=(x_train.shape[1], 1)))
-model.add(Dense(units=1))
-model.compile(optimizer='adam', loss='mean_squared_error')
-model.fit(x_train, y_train, epochs=100)
-from sklearn.metrics import mean_squared_error
 import streamlit as st
+from sklearn.metrics import mean_squared_error
 import matplotlib.pyplot as plt
-y_train_pred = model.predict(x_train)
-y_test_pred = model.predict(x_test)
-train_mse = mean_squared_error(y_train, y_train_pred)
-test_mse = mean_squared_error(y_test, y_test_pred)
-y_train_pred_inv = sc.inverse_transform(y_train_pred)
-y_test_pred_inv = sc.inverse_transform(y_test_pred)
+@st.cache_resource
+def train_and_predict(x_train, y_train, x_test, sc):
+    model = Sequential()
+    model.add(LSTM(units=128, input_shape=(x_train.shape[1], 1)))
+    model.add(Dense(units=1))
+    model.compile(optimizer='adam', loss='mean_squared_error')
+    model.fit(x_train, y_train, epochs=100, verbose=0)
+    y_train_pred = model.predict(x_train)
+    y_test_pred = model.predict(x_test)
+    train_mse = mean_squared_error(y_train, y_train_pred)
+    test_mse = mean_squared_error(y_test, y_test_pred)
+
+    y_train_pred_inv = sc.inverse_transform(y_train_pred)
+    y_test_pred_inv = sc.inverse_transform(y_test_pred)
+    return y_train_pred_inv, y_test_pred_inv, train_mse, test_mse
+y_train_pred_inv, y_test_pred_inv, train_mse, test_mse = train_and_predict(
+    x_train, y_train, x_test, sc
+)
 st.title("NIFTY 50 LSTM Prediction")
 st.subheader("Dataset Preview")
 st.dataframe(data.head())
