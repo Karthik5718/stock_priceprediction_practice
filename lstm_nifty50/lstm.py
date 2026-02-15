@@ -1,7 +1,11 @@
 import pandas as pd
 import numpy as np
 import tensorflow as tf
-data=pd.read_csv("NIFTY 50_day.csv")
+import os
+import pandas as pd
+BASE_DIR = os.path.dirname(__file__)
+file_path = os.path.join(BASE_DIR, "NIFTY 50_day.csv")
+data = pd.read_csv(file_path)
 data["date"]=pd.to_datetime(data["date"])
 data.set_index("date", inplace=True)
 print(data.head(2))
