@@ -40,22 +40,15 @@ model.compile(optimizer='adam', loss='mean_squared_error')
 model.fit(x_train, y_train, epochs=100)
 from sklearn.metrics import mean_squared_error
 y_tr=model.predict(x_train)
-print(mean_squared_error(y_tr,y_train))
 y_tr=y_tr.reshape(-1,1)
 xcharizard1=sc.inverse_transform(y_tr)
 y_te=model.predict(x_test)
-print(mean_squared_error(y_te,y_test))
 y_tr=y_te.reshape(-1,1)
 xcharizard2=sc.inverse_transform(y_te)
 window_size = 10
 split = int(len(y) * 0.8)
 
 
-'streamlit-'
-
-
-import streamlit as st
-st.title("NIFTY 50 LSTM Prediction")
 import streamlit as st
 st.title("NIFTY 50 LSTM Prediction")
 st.subheader("Dataset Preview")
