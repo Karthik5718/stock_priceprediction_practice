@@ -17,6 +17,7 @@ Academic learning
 Understanding LSTM architecture
 Practicing time-series modeling
 Experimenting with stock data preprocessing
-Disclaimer
-This project is for educational purposes only.
-It should not be used for real trading or financial advice.
+
+
+
+streamlit link:https://stockpricepredictionpractice-hvlsivyneqkeozzuljdup2.streamlit.app/
